@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <title>Lista de Productos</title>
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="mb-4">Lista de Productos</h1>
+    
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th id="nombre">Nombre</th>
+          <th id="precio">Precio</th>
+        </tr>
+      </thead>
+      
+      <tbody id="productosTable">
+        <!-- Aquí va el código para mostrar los productos -->
+    </tbody>
+    <form id="formularioProducto" action="/productos" method="POST" class="mb-5">
+        <div class="form-group">
+            <label for="nombre">Nombre:</label>
+            <input type="text" class="form-control" id="nombre" name="nombre" required>
+        </div>
+        <div class="form-group">
+            <label for="precio">Precio:</label>
+            <input type="number" class="form-control" id="precio" name="precio" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Agregar</button>
+    </form>
+    
+
+   
+  </div>
+  <script>
+    const apiUrl = 'http://localhost:3000/productos';
+
+    // Cargar productos al cargar la página
+    const cargarProductos = async () => {
+        const res = await fetch(apiUrl);
+        const productos = await res.json();
+        const tabla = document.getElementById('productosTable');
+        tabla.innerHTML = productos.map(producto => `
+            <tr>
+                <td>${producto.id}</td>
+                <td>${producto.nombre}</td>
+                <td>${producto.precio}</td>
+            </tr>
+        `).join('');
+    };
+
+    // Manejar el formulario para agregar productos
+    document.getElementById('formularioProducto').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const nombre = document.getElementById('nombre').value;
+        const precio = document.getElementById('precio').value;
+
+        const res = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre, precio })
+        });
+
+        if (res.ok) {
+          document.getElementById('formularioProducto').reset();
+            cargarProductos();
+        }
+    });
+
+    // Inicializar
+    cargarProductos();
+</script>
+</body>
+</html>
+
+
+
+
